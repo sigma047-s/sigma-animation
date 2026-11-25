@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Background Animation</title>
+    <style>
+        /* Reset & base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0c0f;
+            background-image: radial-gradient(ellipse at 50% 0%, #141a22 0%, #0a0c0f 70%);
+            font-family: 'Courier Prime', 'Times New Roman', monospace;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Scanline overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg,
+                    rgba(0, 0, 0, 0.18) 0px,
+                    rgba(0, 0, 0, 0.18) 2px,
+                    transparent 2px,
+                    transparent 8px);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Vignette overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 55%, #050607 100%);
+            pointer-events: none;
+            z-index: 998;
+        }
+
+        /* Matrix background container */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+            opacity: 0.22;
+            will-change: transform;
+        }
+
+        .matrix-bg span {
+            position: absolute;
+            top: -10vh;
+            font-family: 'Courier Prime', monospace;
+            font-weight: 700;
+            color: #d4b85a;
+            text-shadow: 0 0 12px rgba(201, 168, 76, 0.30), 0 0 40px rgba(201, 168, 76, 0.08);
+            animation: matrixFall linear infinite;
+            will-change: transform, opacity;
+            user-select: none;
+            pointer-events: none;
+            backface-visibility: hidden;
+        }
+
+        @keyframes matrixFall {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(0.9);
+                opacity: 0;
+            }
+            8% {
+                opacity: 1;
+            }
+            88% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(720deg) scale(1.1);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive opacity for smaller screens */
+        @media (max-width: 900px) {
+            .matrix-bg {
+                opacity: 0.15;
+            }
+        }
+        @media (max-width: 600px) {
+            .matrix-bg {
+                opacity: 0.12;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Matrix background animation -->
+    <div class="matrix-bg" id="matrixBg"></div>
+
+    <script>
+        // ================================================================
+        //  MATRIX BACKGROUND
+        // ================================================================
+        (function initMatrix() {
+            const container = document.getElementById('matrixBg');
+            if (!container) return;
+            const chars = ['0', '1', '●', '◆', '◈', '▣', '⎔'];
+            const count = 50;
+            const fragment = document.createDocumentFragment();
+
+            for (let i = 0; i < count; i++) {
+                const span = document.createElement('span');
+                span.textContent = chars[Math.floor(Math.random() * chars.length)];
+                span.style.left = (Math.random() * 100) + '%';
+                const size = 0.8 + Math.random() * 1.4;
+                span.style.fontSize = size + 'rem';
+                const duration = 10 + Math.random() * 12;
+                span.style.animationDuration = duration + 's';
+                span.style.animationDelay = (Math.random() * 18) + 's';
+                span.style.opacity = 0.3 + Math.random() * 0.5;
+                span.style.color = `hsl(42, ${55 + Math.random() * 20}%, ${55 + Math.random() * 25}%)`;
+                const glowIntensity = 0.15 + Math.random() * 0.25;
+                span.style.textShadow =
+                    `0 0 ${8 + Math.random() * 16}px rgba(201,168,76,${glowIntensity}), 0 0 ${30 + Math.random() * 40}px rgba(201,168,76,${glowIntensity * 0.3})`;
+                span.style.willChange = 'transform, opacity';
+                span.style.backfaceVisibility = 'hidden';
+                fragment.appendChild(span);
+            }
+            container.appendChild(fragment);
+        })();
+    </script>
+</body>
+</html>
